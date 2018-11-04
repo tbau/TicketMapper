@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="stuff, to, help, search, engines, not" name="keywords">
+<meta content="What this page is about." name="description">
+<meta content="TicketMapper" name="title">
+<title>TicketMapper</title>
+<!--<script src="tracking.js/build/tracking.js"></script>
+<script src="tracking.js/build/data/face.js"></script>
+<script src="tracking.js/build/data/eye.js"></script>
+--><script src="jquery-3.3.1.js"></script>
+</head>  
+<body>
+<!--<input type="file" accept="image/*; capture=camera">
+<button onclick="start()">Start!</button>
+<button onclick="snap()">Snap!</button><div id="div"></div>-->
+<div id="container">
+	
+<video id="video" width="240" height="180" style="display:none;" autoplay></video>
+
+<img src="" id="img1" style="display:none;">
+<img src="" id="img2" style="display:none;">
+<!--
+<img src="" id="img2">
+<img src="" id="img3">
+<img src="" id="img4">
+<img src="" id="img5">
+
+<div class="slidecontainer">
+	<input type="range" min="0" max="255" value="0" class="detection" id="detection">
+  </div>
+</div>
+<button id="button">Get</button>
+-->
+
+<div id="googleMap" style="width:100%;height:400px;"></div>
+<br>
+<div id="desc"></div>
+
+<!--
+
+<script>
+
+// var video = document.querySelector("#videoElement");
+ 
+ var start = () => navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => video.srcObject = stream)
+  .catch(log);
+
+var canvas1 = document.createElement("canvas");
+var canvas2 = document.createElement("canvas");
+var canvas3 = document.createElement("canvas");
+var canvas4 = document.createElement("canvas");
+var canvas5 = document.createElement("canvas");
+
+var filterCanvas = document.createElement("canvas");
+filterCanvas.style.filter="grayscale(100%);"
+
+var img1 = document.getElementById("img1")
+var img2 = document.getElementById("img2")
+var img3 = document.getElementById("img3")
+var img4 = document.getElementById("img4")
+var img5 = document.getElementById("img5")
+
+img1.width=video.width/2
+img1.height=video.height/2
+
+img2.width=video.width/2
+img2.height=video.height/2
+
+img3.width=video.width/2
+img3.height=video.height/2
+
+img4.width=video.width/2
+img4.height=video.height/2
+
+img5.width=video.width/2
+img5.height=video.height/2
+
+img2.style="filter:brightness(250%)"
+img5.style="filter:brightness(200%)"
+
+var imgData
+
+var update = () => {
+	canvas1.getContext('2d').drawImage(video, 0, 0, video.width,video.height);
+    // canvas.getContext('2d').drawImage(document.getElementById("img1"), 0, 0);
+    imgData = canvas1.getContext('2d').getImageData(0, 0, video.width, video.height).data;
+
+	
+}
+var snap = () => {
+  update();
+
+  createImageFromARGBdataXor(canvas1,imgData,video.width,video.height,200,150,200)
+  createImageFromARGBdataAnd(canvas2,imgData,video.width,video.height,80,90,10)
+  createImageFromARGBdataOr(canvas3,imgData,video.width,video.height,60,0,60)
+  createImageFromARGBdataGrayScale(canvas4,imgData,video.width,video.height)
+  createImageFromARGBdataDetectWhite(canvas5,imgData,video.width,video.height,225,250,225)
+
+  img1.src = canvas1.toDataURL()
+  img2.src = canvas2.toDataURL()
+  img3.src = canvas3.toDataURL()
+  img4.src = canvas4.toDataURL()
+  img5.src = canvas5.toDataURL()
+
+  //document.getElementById("img3").style.filter = "brightness(300%)";
+  // document.getElementById("img4").style.filter = "brightness(700%)";
+  //console.log(imgData)
+  //preview.getContext('2d').drawImage(canvas, 0, 0, 160, 120);
+}
+//var bArr = "\xff\x00\x00\x00"
+
+var log = msg => div.innerHTML += "<br>" + msg;
+//document.getElementById("img1").src = "data:image/png;base64," + bArr;
+
+function createImageFromRGBdata(rgbData, width, height)
+{	
+	canvas.width = width;
+	canvas.height = height;
+	
+	var mContext = canvas.getContext('2d');
+	var mImgData = mContext.createImageData(width, height);
+	
+	var srcIndex=0, dstIndex=0, curPixelNum=0;
+	
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)
+	{
+		mImgData.data[dstIndex] = rgbData[srcIndex];		// r
+		mImgData.data[dstIndex+1] = rgbData[srcIndex+1];	// g
+		mImgData.data[dstIndex+2] = rgbData[srcIndex+2];	// b
+		mImgData.data[dstIndex+3] = 255; // 255 = 0xFF - constant alpha, 100% opaque
+		srcIndex += 3;
+		dstIndex += 4;
+	}
+	mContext.putImageData(mImgData, 0, 0);
+	return canvas;
+}
+
+function createImageFromARGBdata(canvas, rgbData, width, height)
+{
+	canvas.width = width;
+	canvas.height = height;
+	
+	var mContext = canvas.getContext('2d');
+	var mImgData = mContext.createImageData(width, height);
+	
+	var i=0, curPixelNum=0;
+	
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)
+	{
+		mImgData.data[i] = rgbData[i];		// r
+		mImgData.data[i+1] = rgbData[i+1];	// g
+		mImgData.data[i+2] = rgbData[i+2];	// b
+		mImgData.data[i+3] = rgbData[i+3]; // 255 = 0xFF - constant alpha, 100% opaque
+		i += 4;
+	}
+	mContext.putImageData(mImgData, 0, 0);
+	//return canvas;
+}
+
+function createImageFromARGBdataXor(canvas, rgbData, width, height,r,g,b)
+{
+	canvas.width = width;
+	canvas.height = height;
+	
+	var mContext = canvas.getContext('2d');
+	var mImgData = mContext.createImageData(width, height);
+	
+	var i=0, curPixelNum=0;
+	
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)
+	{
+        mImgData.data[i] = rgbData[i]^r;		// r
+        mImgData.data[i+1] = rgbData[i+1]^g;	// g
+        mImgData.data[i+2] = rgbData[i+2]^b;	// b
+        mImgData.data[i+3] = rgbData[i+3]; // 255 = 0xFF - constant alpha, 100% opaque
+		i += 4;
+	}
+	mContext.putImageData(mImgData, 0, 0);
+	//return canvas;
+}
+
+
+function createImageFromARGBdataAnd(canvas, rgbData, width, height, r,g,b)
+{
+	canvas.width = width;
+	canvas.height = height;
+	
+	var mContext = canvas.getContext('2d');
+	var mImgData = mContext.createImageData(width, height);
+	
+	var i=0, curPixelNum=0;
+	
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)
+	{
+        mImgData.data[i] = rgbData[i]&r;		// r
+        mImgData.data[i+1] = rgbData[i+1]&g;	// g
+        mImgData.data[i+2] = rgbData[i+2]&b;	// b
+        mImgData.data[i+3] = rgbData[i+3];        
+        i += 4;
+	}
+	mContext.putImageData(mImgData, 0, 0);
+	//return canvas;
+}
+
+
+function createImageFromARGBdataOr(canvas, rgbData, width, height, r,g,b)
+{
+	canvas.width = width;
+	canvas.height = height;
+	
+	var mContext = canvas.getContext('2d');
+	var mImgData = mContext.createImageData(width, height);
+	
+	var i=0, curPixelNum=0;
+	
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)   
+    {  
+        mImgData.data[i] = rgbData[i]|r;		// r
+        mImgData.data[i+1] = rgbData[i+1]|g;	// g
+        mImgData.data[i+2] = rgbData[i+2]|b;	// b
+        mImgData.data[i+3] = rgbData[i+3];
+		i += 4;	
+	}
+	mContext.putImageData(mImgData, 0, 0);
+	//return canvas;
+}
+
+
+function createImageFromARGBdataGrayScale(canvas, rgbData, width, height)
+{
+	canvas.width = width;
+	canvas.height = height;
+
+	var mContext = canvas.getContext('2d');
+	
+	var mImgData = mContext.createImageData(width, height);
+	var i=0, curPixelNum=0;
+	var v
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)   
+    {  
+		v =  0.2126*rgbData[i]	+ 0.7152*rgbData[i+1]+ 0.0722*rgbData[i+2]	
+
+        mImgData.data[i] = mImgData.data[i+1]=mImgData.data[i+2]=v 
+        mImgData.data[i+3] = rgbData[i+3];
+		i += 4;	
+	}
+
+	mContext.putImageData(mImgData, 0, 0);
+	mContext.lineWidth="6";
+	mContext.strokeStyle="lime"
+
+	for (var i=0;i<faces.length;i++){
+		mContext.rect(faces[i].x,faces[i].y,faces[i].w,faces[i].h);
+		mContext.stroke()
+	}
+	
+
+	faces=[]
+	//return canvas;
+}
+
+
+function createImageFromARGBdataDetectWhite(canvas, rgbData, width, height, r,g,b)
+{
+	
+	r = g = b = parseInt(document.getElementById("detection").value)
+	canvas.width = width;
+	canvas.height = height;
+	
+	var mContext = canvas.getContext('2d');
+	var mImgData = mContext.createImageData(width, height);
+	
+	var i=0, curPixelNum=0;
+	
+	for (curPixelNum=0; curPixelNum<width*height;  curPixelNum++)
+	{
+        if (rgbData[i] > r&&rgbData[i+1] > g&&rgbData[i+2] > b){
+            mImgData.data[i]=0;
+            mImgData.data[i+1]=0;
+            mImgData.data[i+2]=0;
+
+        }		    
+        else{
+            mImgData.data[i] = rgbData[i];		
+            mImgData.data[i+1] = rgbData[i+1];
+            mImgData.data[i+2] = rgbData[i+2];
+        }
+        mImgData.data[i+3] = rgbData[i+3]; 
+	    i += 4;
+	}
+	mContext.putImageData(mImgData, 0, 0);
+	//return canvas;
+
+
+
+}
+
+var faces = []
+var eye=0;
+var rgbData = new Array(
+0xff,0xff,0xff,  0xff,0xff,0xff,  0xff,0xff,0xff,  0xff,0xff,0xff,// white,white,white, white
+0xff,0xff,0xff,  0xff,0x00,0x00,  0x00,0xff,0x00,  0xff,0xff,0xff,// white,  red,green, white
+0xff,0xff,0xff,  0x00,0x00,0xff,  0xff,0xff,0x00,  0xff,0xff,0xff,// white, blue,yellow,white
+0xff,0xff,0xff,  0xff,0xff,0xff,  0xff,0xff,0xff,  0xff,0xff,0xff // white,white,white, white
+);
+
+start()
+
+var updateXor = () =>{
+	 createImageFromARGBdataXor(canvas1,imgData,video.width,video.height,200,150,200)
+	 img1.src = canvas1.toDataURL()
+	 //img1.style="transform:scaleX(-1);"
+}
+var updateAnd = () =>{
+	createImageFromARGBdataAnd(canvas2,imgData,video.width,video.height,80,90,10)
+  	img2.src = canvas2.toDataURL()
+	//img2.style="transform:scaleX(-1);filter:brightness(250%)"
+}
+
+var updateOr = () =>{
+	createImageFromARGBdataOr(canvas3,imgData,video.width,video.height,60,0,60)
+	img3.src = canvas3.toDataURL()
+	//img3.style="transform:scaleX(-1);"
+}
+
+var updateGray = () =>{
+	createImageFromARGBdataGrayScale(canvas4,imgData,video.width,video.height)
+	img4.src = canvas4.toDataURL()
+    //img4.style="transform:scaleX(-1);"
+}
+
+var updateDetectWhite = () =>{
+	createImageFromARGBdataDetectWhite(canvas5,imgData,video.width,video.height,215,215,215)
+	img5.src = canvas5.toDataURL()
+	
+	//img5.style="transform:scaleX(-1);"
+}
+var objects = new tracking.ObjectTracker("eye");
+objects.setInitialScale(1);
+objects.setStepSize(1);
+objects.setEdgesDensity(.2);	
+
+objects.on('track', function(event) {
+	
+    event.data.forEach(function(rect) {
+		window.plot(rect.x, rect.y, rect.width, rect.height);
+    })	
+});
+
+
+tracking.track('#video', objects);
+
+var ix, iy, iw, ih;
+var dirty = false;
+window.plot = function(x, y, w, h) {
+	ix = x
+	iy = y
+	iw = w
+	ih = h
+	faces[eye]={x:ix,y:iy,w:iw,h:ih};
+	if(eye==0)
+		eye=1;
+	else
+		eye=0;
+	//console.log(faces)
+  /*  var rect = document.createElement('div');
+    document.querySelector('#video').appendChild(rect);
+    rect.classList.add('rect');
+    rect.style.width = w + 'px';
+    rect.style.height = h + 'px';
+    rect.style.left = (document.getElementById("video").offsetLeft + x) + 'px';
+    rect.style.top = (document.getElementById("video").offsetTop + y) + 'px';
+    rect.style.borderColor = '#ff0000';
+*/
+};
+//setInterval(snap,100)
+setInterval(update,50)
+
+setInterval(updateXor,50)
+setInterval(updateAnd,50)
+//setInterval(updateOr,50)
+setInterval(updateGray,50)
+setInterval(updateDetectWhite,50)
+
+var removeImgs = () =>{
+	//img1.parentNode.removeChild(img1)
+	//img2.parentNode.removeChild(img2)
+	img3.parentNode.removeChild(img3)
+	//img4.parentNode.removeChild(img4)
+	//img5.parentNode.removeChild(img5)
+}
+
+removeImgs()
+</script>
+-->
+<script src="imageTracker.js"></script>
+<script src="loadMapAndTicketData.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwvgdGoUKcEKiFlgvlF79PxmKG0FGEoTw&callback=tryGeolocation"></script>
+
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+}
+.events{
+	text-align:center;
+	width:80%;
+	background-color:azure;
+	margin:auto;
+	margin-top:10px;
+	padding:auto;
+	border:8px limegreen ridge;
+	border-bottom-style: ridge;
+    border-bottom-width: 8px;
+	margin-top: 0px;
+	border-bottom: none;
+	padding-top: 45px;
+	padding-bottom: 30px;
+}
+p,ul,h1,h2,span{
+	width:80%;
+	margin:auto;
+	padding:auto
+}
+
+p{
+	padding-top:20px;
+	padding-bottom:20px;
+}
+
+.titleName{
+	width:100%;
+	color:#0fce2c;
+	font-size:150%;
+}
+
+#search, #center {
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+	background-color: #4CAF50;
+    color: white;
+    border: 2px solid black;
+	border-radius: 4px;
+	padding: 17px 27px;
+	font-size:120%;
+}
+
+
+#search:hover {
+    background-color: white;
+    color: black;
+	border: 2px solid #4CAF50;
+}
+
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.none {
+    position: fixed; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+	width:fixed;
+}
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+}
+#top {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 20px; /* Place the button at the bottom of the page */
+    right: 30px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: gainsboro; /* Set a background color */
+    color: black; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    border-radius: 50px; /* Rounded corners */
+	padding-top: 0;
+    width:50px;
+    height:50px;
+    width:50px;
+	font-size:200%;
+}
+#top:hover {
+    background-color: #555; /* Add a dark-grey background on hover */
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider2 {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider2:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: -1px;
+  background-color: #4CAF50;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider2 {
+  background-color: #4CAF50;
+}
+
+input:focus + .slider2 {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider2:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+  background-color: whitesmoke;
+}
+
+/* Rounded sliders */
+.slider2.round {
+  border-radius: 34px;
+}
+
+.slider2.round:before {
+  border-radius: 50%;
+}
+
+.unformatted{
+	display: block;
+	margin:0;
+	padding:0
+}
+
+#searchText{
+	width:10%;
+	height:25px;
+	padding-top:5px;
+    padding-bottom:0px;
+	margin-top:15px;
+	margin-bottom:5px;
+	margin-left:10px;
+	font-size:100%;
+	color:#4CAF50;
+}
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #4CAF50;
+    opacity: .7; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+     color: #4CAF50;
+     opacity: .7; 
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+     color: #4CAF50;
+     opacity: .7; 
+}
+
+</style>
+
+<button id="top" onclick="topFunction()">&uArr;</button>
+</div>
+</body>
+</html>
