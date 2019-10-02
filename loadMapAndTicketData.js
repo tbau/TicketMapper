@@ -7,7 +7,7 @@ var keyword=" "
 
 
 	var tryAPIGeolocation = function () {
-		jQuery.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDCa1LUe1vOczX1hO_iGYgyo8p_jYuGOPU",
+		jQuery.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDXFuitzhqCgZtZyc6-PeTaUwC0TI_CI2w",
 		function (success) {
 			apiGeolocationSuccess({
 				coords: {
